@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@opentui/core-win32-x64": "^0.4.2"
+  }
+}
