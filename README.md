@@ -1,8 +1,8 @@
-# opentui-nim — Nim bindings for OpenTUI's native Zig core
+# nim-opentui — Nim bindings for OpenTUI's native Zig core
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-`opentui-nim` provides idiomatic Nim bindings for [OpenTUI](https://github.com/anomalyco/opentui)'s
+`nim-opentui` provides idiomatic Nim bindings for [OpenTUI](https://github.com/anomalyco/opentui)'s
 native Zig core. It is a thin FFI layer over OpenTUI's C ABI, wrapped in safe Nim
 types with automatic resource management (ORC destructors), plus a small set of
 ergonomic helpers (`drawText`, `drawBox`, color constructors, terminal setup).
@@ -32,6 +32,63 @@ Everything is re-exported from the top-level `opentui` module, so a single
 - **Nim >= 2.0.0** (developed and tested on 2.0.8)
 - **Zig 0.15.2** — only required if you build the native library from source
 - **OpenTUI native library** (`libopentui.so` / `libopentui.dylib` / `opentui.dll`)
+
+## Getting the OpenTUI Native Library
+
+There is no standalone `opentui.dll` distributed separately — OpenTUI's native core is distributed through platform-specific npm packages as prebuilt binaries. Here are three ways to obtain the library for Nim bindings:
+
+### Option 1: Install via npm and extract the binary
+
+The easiest way to get a prebuilt binary is through npm:
+
+```bash
+# Install the Windows x64 binary package
+npm install @opentui/core-win32-x64
+
+# The native binary will be in:
+# node_modules/@opentui/core-win32-x64/
+# Look for a .dll, .node, or similar native file
+```
+
+> **Note:** The npm package structure suggests the binary is likely a `.node` file (Node.js native addon) or a `.dll` that gets loaded via FFI. Copy the appropriate file to your project or a system library path.
+
+Available platform packages:
+- `@opentui/core-win32-x64`
+- `@opentui/core-linux-x64`
+- `@opentui/core-darwin-arm64`
+- `@opentui/core-darwin-x64`
+
+### Option 2: Build from source with Zig
+
+OpenTUI is written in Zig and exposes a C ABI. Build the DLL yourself:
+
+```bash
+git clone https://github.com/anomalyco/opentui.git
+cd opentui/packages/core
+
+# Build native libraries (requires Zig installed)
+bun run build:native
+```
+
+The build system creates platform-specific libraries in `zig-out/lib/`:
+
+| Platform | Artifact |
+|----------|----------|
+| Linux    | `libopentui.so` |
+| macOS    | `libopentui.dylib` |
+| Windows  | `opentui.dll` |
+
+### Option 3: Check the GitHub Releases
+
+For Windows users, the README mentions: **Download the latest release directly from GitHub Releases**. However, the Releases page typically only shows source archives — the actual prebuilt binaries are distributed through npm (see Option 1 above).
+
+### Important Notes for Nim Bindings
+
+1. **The C ABI is the key**: OpenTUI's native core exposes a C ABI specifically so it "can be used from any language". This enables Go and Rust bindings to exist (`opentui_rust` and Go packages).
+
+2. **No official Nim bindings yet**: As noted by the OpenTUI author, "Right now opentui is really only usable from js/ts ecosystem sadly. There is a really valuable project here for someone to take these and make them easy to use as a library with c API or standard FFI".
+
+3. **The binary format**: The TypeScript bindings use Bun's FFI to load the native library. The actual file may be named differently than `opentui.dll` (it could be `opentui.node` or similar). Use Nim's `dynlib` module to load it dynamically.
 
 ## Building the native library
 
