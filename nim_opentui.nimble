@@ -5,6 +5,7 @@ author        = "harrison"
 description   = "Nim bindings for OpenTUI native Zig core"
 license       = "MIT"
 srcDir        = "src"
+tags          = "tui terminal ui ffi wrapper bindings zig opentui"
 
 # Dependencies
 
